@@ -1,3 +1,9 @@
+* Video
+
+Click to view.
+
+[[https://www.youtube.com/watch?v=Py6tDjUyGKk][./img/secretary-youtube.png]]
+
 * Quickstart (TL;DR)
 
 1. Clone the script files, and add them into your =$PATH=.
