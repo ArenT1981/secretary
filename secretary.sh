@@ -1,6 +1,6 @@
 #!/bin/bash
 # Author: Aren Tyr
-# Date: 2019-12-23
+# Date: 2020-02-29
 # aren.unix@yandex.com
 #
 # Secretary: A command line program to help automatically reorganise your files
@@ -279,14 +279,14 @@ do
   CMD="cp -n"
   DATE_MODE="DISABLE"
 
-	COMMENT_HASH="`echo $LINE | cut -c 1`"
-	[ "$COMMENT_HASH" = "#" ] && continue
+  COMMENT_HASH="`echo $LINE | cut -c 1`"
+  [ "$COMMENT_HASH" = "#" ] && continue
 
-	TYPE_FIELD="`echo $LINE | cut -d ':' -f 1`"
-	EXT_FIELD="`echo $LINE | cut -d ':' -f 2`"
+  TYPE_FIELD="`echo $LINE | cut -d ':' -f 1`"
+  EXT_FIELD="`echo $LINE | cut -d ':' -f 2`"
   SOURCE_FIELD="`echo $LINE | cut -d ':' -f 3`"
-	DEST_FIELD="`echo $LINE | cut -d ':' -f 4`"
-	DATE_CHECK="`echo $DEST_FIELD | grep ".*DATE#.*" -`"
+  DEST_FIELD="`echo $LINE | cut -d ':' -f 4`"
+  DATE_CHECK="`echo $DEST_FIELD | grep ".*DATE#.*" -`"
 
   FILE_CMD="`echo $LINE | cut -d ':' -f 5 | cut -d '#' -f 1`"
 
@@ -405,8 +405,6 @@ do
 			       | awk -v b="\"" -v a="$DEST_FIELD" -v c="$CMD" '/$/{ print c":"b$0b":"b a b }' \
 			             >> "$CONF_DIR/filelist-$COUNTER-$MIME.files"
 
-         #cp $CONF_DIR/filelist-$COUNTER-$MIME.files arse-$COUNTER.poo
-
             if [ -s "$CONF_DIR/filelist-$COUNTER-$MIME.files" ]; then
                 sed -i "1i# -> [ $MIME files from $SOURCE_FIELD to $DEST_FIELD ]" "$CONF_DIR/filelist-$COUNTER-$MIME.files"
             else
@@ -459,9 +457,9 @@ sed -i "19i# $ $CONF_DIR/fileops/secretary-file-operations-$TIMESTAMP.sh" "$FILE
 
 # Gather together the directory creation and throw away duplicate mkdir -pv commands
 # for aesthetic and clarity purposes (would still run OK with them all in though)
-cat $CONF_DIR/filelist-*.dirlist >> $CONF_DIR/tmp-master.dirlist
-cat $CONF_DIR/datemode-*.dirlist >> $CONF_DIR/tmp-master.dirlist
-cat $CONF_DIR/tmp-master.dirlist | sort | uniq >> $CONF_DIR/master.dirlist
+cat $CONF_DIR/filelist-*.dirlist >> $CONF_DIR/tmp-master.dirlist 2>/dev/null
+cat $CONF_DIR/datemode-*.dirlist >> $CONF_DIR/tmp-master.dirlist 2>/dev/null
+cat $CONF_DIR/tmp-master.dirlist | sort | uniq >> $CONF_DIR/master.dirlist 2>/dev/null
 
 # Add these directories to the work script
 sed -i '1i# -> [ Create necessary directories for subsequent file copying/moving operations ]\n' "$CONF_DIR/master.dirlist"
@@ -526,6 +524,7 @@ do
 	fi
 done
 
+sleep 0.5
 # Put footer information at bottom of work script with summary data
 OPERATIONS=`egrep -v '^#|^mkdir|^$' "$FILE_OPS_DIR/secretary-file-operations-$TIMESTAMP.sh" | wc -l`
 DIRS=`grep '^mkdir' "$FILE_OPS_DIR/secretary-file-operations-$TIMESTAMP.sh" | wc -l`
@@ -551,7 +550,7 @@ if [ "$AUTO" = "YES" ]; then
     echo ""
 	  echo "* Running in AUTO mode, will now execute the file operations..."
 	  sleep 1
-    bash "$FILE_OPS_DIR/secretary-file-operations-$TIMESTAMP.sh" | tee secretary-$TIMESTAMP.log
+    bash "$FILE_OPS_DIR/secretary-file-operations-$TIMESTAMP.sh" | tee "$FILE_OPS_DIR/secretary-$TIMESTAMP.log"
     echo ""
     echo "* Complete. File transactions finished."
     echo "* Logfile showing operations performed created at:"
